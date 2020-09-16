@@ -1,5 +1,6 @@
 package com.zhishouwei.common.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import lombok.Data;
 
@@ -16,7 +17,8 @@ public abstract class BaseEntity implements Serializable {
     @GeneratedValue(generator = "jpa-uuid", strategy = GenerationType.IDENTITY)
     @TableId
     private String id;
-
-    private Date currentTime;
+    @TableField("create_time")
+    private Date createTime;
+    @TableField("update_time")
     private Date updateTime;
 }

@@ -1,0 +1,15 @@
+package ${package.ServiceImpl};
+
+import ${package.Entity}.${entity};
+import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
+import com.zhishouwei.common.model.mapper.BaseMapper;
+import org.springframework.stereotype.Service;
+
+/**
+ * @Author: auto generate by hutu
+ * @Create: ${date}
+ */
+@Service
+public class ${table.serviceImplName} extends BaseServiceImpl<BaseMapper<${entity}>, ${entity}> {
+
+}

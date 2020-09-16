@@ -1,6 +1,10 @@
 package com.zhishouwei.common.utils;
 
+import java.io.File;
+import java.io.IOException;
+
 public class StringUtils {
+
 
     /**
      * 驼峰转下划线
@@ -9,6 +13,18 @@ public class StringUtils {
      */
     public static String toUnderlineCase(CharSequence str) {
         return toSymbolCase(str, '_');
+    }
+
+    /**
+     * 包名转化为文件路径名
+     * @param packageName   包名
+     * @return  文件路径
+     */
+    public static String packageToPath(String packageName) {
+        if (packageName != null && packageName.length() > 0) {
+            packageName = packageName.replace(".", "/");
+        }
+        return packageName;
     }
 
     /**
@@ -55,5 +71,45 @@ public class StringUtils {
 
             return sb.toString();
         }
+    }
+
+    public static String getPackagePath(String projectPath, String projectName) {
+        String path = projectPath + "/src/main/java";
+
+        File packageFile = new File(path);
+        File file = getDirectory(packageFile, projectName);
+        String name = null;
+        try {
+            name = file.getCanonicalPath().replace(projectPath+"/", "");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return name;
+    }
+
+    public static File getDirectory(File file, String pak) {
+        if (file.isDirectory()) {
+            if (pak.equals(file.getName())) {
+                return file;
+            } else {
+                for (File item : file.listFiles()) {
+                    if (pak.equals(item.getName())) {
+                        return item;
+                    } else
+                    if (item.isDirectory()) {
+                        file = getDirectory(item, pak);
+                    }
+                }
+            }
+        } else {
+            return null;
+        }
+        return file;
+    }
+    public static String getPackageName(String projectPath, String projectName) {
+
+        String name = getPackagePath(projectPath, projectName);
+        name = name.replace("src/main/java/", "");
+        return name.replace("/", ".");
     }
 }

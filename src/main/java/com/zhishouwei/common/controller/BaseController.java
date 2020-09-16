@@ -1,4 +1,4 @@
-package com.zhishouwei.common.contoller;
+package com.zhishouwei.common.controller;
 
 import com.zhishouwei.common.model.DataPaging;
 import com.zhishouwei.common.model.JsonRequestBody;

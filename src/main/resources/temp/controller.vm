@@ -1,0 +1,16 @@
+package ${package.Controller};
+
+import ${package.Entity}.${entity};
+import ${package.ServiceImpl}.${table.serviceImplName};
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import com.zhishouwei.common.controller.BaseController;
+
+/**
+ * @author: auto generate by ${author}
+ * @since: ${date}
+ */
+@RestController
+@RequestMapping("${entity}")
+public class ${table.controllerName} extends BaseController<${entity}, ${table.serviceImplName}> {
+}

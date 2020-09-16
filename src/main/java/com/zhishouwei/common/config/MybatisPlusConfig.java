@@ -2,7 +2,6 @@ package com.zhishouwei.common.config;
 
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
-import com.zhishouwei.common.model.mybatis.MasterDataSqlInjector;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,6 +20,7 @@ public class MybatisPlusConfig {
         paginationInterceptor.setCountSqlParser(new JsqlParserCountOptimize(true));
         return paginationInterceptor;
     }
+//    由于功能优化，暂时不使用,后续考虑移除 by hutu
 //    @Bean
 //    public MasterDataSqlInjector masterDataSqlInjector() {
 //        return new MasterDataSqlInjector();
