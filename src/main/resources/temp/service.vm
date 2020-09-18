@@ -2,7 +2,7 @@ package ${package.Service};
 
 import ${package.Entity}.${entity};
 import ${package.Mapper}.${table.mapperName};
-import com.zhishouwei.common.model.service.BaseService
+import com.zhishouwei.common.model.service.BaseService;
 /**
  * @Author: auto generate by hutu
  * @Create: ${date}

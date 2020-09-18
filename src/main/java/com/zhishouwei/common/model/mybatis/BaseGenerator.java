@@ -12,43 +12,70 @@ import com.zhishouwei.common.model.entity.BaseEntity;
 import com.zhishouwei.common.model.service.BaseService;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.utils.StringUtils;
-import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.context.annotation.Configuration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.stereotype.Component;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.HashMap;
 
 @Slf4j
-@Data
-@Configuration
+//@Data
+@Component
+@Configurable
+@EnableAutoConfiguration
 public class BaseGenerator  {
 
-    @Value("spring.datasource.url")
-//    private String mysqlUrl = "jdbc:mysql://localhost:3306/demo";
+    private static final String INSTANCE_KEY = "BASE_GENERATOR";
+    @Value("${spring.datasource.url}")
     private String mysqlUrl;
-    @Value("spring.datasource.username")
-//    private String mysqlUsername = "root";
+    //    private String mysqlUrl = "jdbc:mysql://localhost:3306/demo";
+    @Value("${spring.datasource.username}")
     private String mysqlUsername;
-    @Value("spring.datasource.password")
-//    private String mysqlPassword = "VcaHmg0!qBeayg$ku6f~_Q1vtalQ4egu";
+    //    private String mysqlUsername = "root";
+    @Value("${spring.datasource.password}")
     private String mysqlPassword;
+//    private String mysqlPassword = "VcaHmg0!qBeayg$ku6f~_Q1vtalQ4egu";
 
-    private BaseGenerator instances;
-    public static void main(String[] args) {
-        BaseGenerator t = new BaseGenerator();
-        t.init();
+    private static BaseGenerator instance;
+    private static final AutoGenerator gen = new AutoGenerator();
+
+    public static BaseGenerator getInstance() {
+        if (instance == null) {
+            instance = new BaseGenerator();
+            instance.init();
+        }
+        return instance;
     }
+    @Bean
+    void getBaseGenerator() {
+        init();
+        autoCreate();
+    }
+
     private HashMap<String, String> packageMap = new HashMap<>();
 
     private String projectPath = System.getProperty("user.dir");
-    private String projectName = projectPath.substring(projectPath.lastIndexOf("/") + 1);
+    @Value("${spring.application.name}")
+    private String projectName;
+
+
+
 
     private void init() {
-        AutoGenerator gen = new AutoGenerator();
-
+        log.info("{},{},{}" , mysqlUrl, mysqlUsername, mysqlPassword);
+        // 获取到项目路径
+        projectPath = StringUtils.getProjectPath(projectPath, projectName);
+        log.info("projectPath {}", projectPath);
+        // 根据包路径获取到项目类文件路径
+//        projectPath = StringUtils.getPackagePath(projectPath, projectName);
+        if (projectName == null) {
+            projectName = projectPath.substring(projectPath.lastIndexOf("/") + 1);
+        }
         //mybatis-plus 全局配置信息
         GlobalConfig globalConfig = new GlobalConfig();
         globalConfig.setAuthor("hutu");//作者名
@@ -134,8 +161,13 @@ public class BaseGenerator  {
         gen.setTemplate(createTemp());
 //        gen.setTemplateEngine(new VelocityTemplateEngine());
 
-        //执行生成
-        gen.execute();
+    }
+
+    public void autoCreate() {
+        if (gen.getCfg() != null && gen.getDataSource() != null) {
+            //执行生成
+            gen.execute();
+        }
     }
 
     private TemplateConfig createTemp() {
@@ -165,16 +197,4 @@ public class BaseGenerator  {
         }
         return null;
     }
-
-
-    public BaseGenerator getInstances() {
-        synchronized (getClass()) {
-            if (instances == null) {
-                instances = new BaseGenerator();
-                instances.init();
-            }
-        }
-        return instances;
-    }
-
 }

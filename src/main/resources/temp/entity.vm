@@ -8,12 +8,12 @@ import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
 #end
 
-import com.baomidou.mybatisplus.annotation.TableName;
-import com.zhishouwei.common.model.entity.BaseEntity;
+##import com.baomidou.mybatisplus.annotation.TableName;
+##import com.zhishouwei.common.model.entity.BaseEntity;
 import lombok.Data;
 import javax.persistence.Entity;
-import javax.persistence.Table;
-import java.io.Serializable;
+##import javax.persistence.Table;
+##import java.io.Serializable;
 
 /**
  * @Author: auto generate by hutu

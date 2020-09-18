@@ -1,8 +1,11 @@
 package com.zhishouwei.common.utils;
 
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.File;
 import java.io.IOException;
-
+import java.util.ArrayList;
+@Slf4j
 public class StringUtils {
 
 
@@ -73,10 +76,72 @@ public class StringUtils {
         }
     }
 
-    public static String getPackagePath(String projectPath, String projectName) {
-        String path = projectPath + "/src/main/java";
+    private static File findDict(File file, String name ) {
+        try {
+            log.info("file path {} ===== {}", file.getCanonicalPath(), name);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        ArrayList<File> dics = new ArrayList<>();
+        if (file.isDirectory()) {
+            for (File item : file.listFiles()) {
+                if (item.isDirectory()) {
+                    if (name.equals(item.getName())) {
+                        return item;
+                    } else {
+                        dics.add(item);
+                    }
+                }
+            }
+        }
+        if (dics.size() > 0) {
+            for (File item : dics) {
+                File f = findDict(item, name);
+                if (f != null){
+                    return f;
+                }
+            }
+        }
+        return null;
+    }
+    // 深度优先遍历
+    public static File findFile(File file, String name) {
+        if (file.isDirectory()) {
+            for (File item : file.listFiles()) {
+                if (item.isDirectory()) {
+                    if (name.equals(item.getName())) {
+                        return item;
+                    } else {
+                        File f = findFile(item, name);
+                        if (f != null) {
+                            return f;
+                        }
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    public static String getProjectPath(String projectPath, String appName) {
+        File path = new File(projectPath);
+        File find = StringUtils.findFile(path, appName);
+        if (find == null) {
+            return null;
+        } else {
+            try {
+                projectPath = find.getCanonicalPath();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        return projectPath;
+    }
 
-        File packageFile = new File(path);
+    public static String getPackagePath(String projectPath, String projectName) {
+
+        projectPath = projectPath + "/src/main/java";
+
+        File packageFile = new File(projectPath);
         File file = getDirectory(packageFile, projectName);
         String name = null;
         try {
@@ -84,6 +149,7 @@ public class StringUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        log.info("======= getPackagePath {}", name);
         return name;
     }
 
@@ -108,6 +174,7 @@ public class StringUtils {
     }
     public static String getPackageName(String projectPath, String projectName) {
 
+        log.info("{}----getPackageName------ {}", projectPath, projectName);
         String name = getPackagePath(projectPath, projectName);
         name = name.replace("src/main/java/", "");
         return name.replace("/", ".");
