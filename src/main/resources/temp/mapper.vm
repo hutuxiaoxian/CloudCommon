@@ -2,7 +2,7 @@ package ${package.Mapper};
 
 import org.apache.ibatis.annotations.Mapper;
 import com.zhishouwei.common.model.mapper.BaseMapper;
-import ${package.Entity}.${table.mapperName};
+##import ${package.Entity}.${table.mapperName};
 import ${package.Entity}.${entity};
 
 /**

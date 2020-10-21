@@ -1,5 +1,9 @@
 package com.zhishouwei.common.utils;
 
+import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.symmetric.AES;
+//import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
+import com.zhishouwei.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
@@ -8,6 +12,33 @@ import java.util.ArrayList;
 @Slf4j
 public class StringUtils {
 
+    private static final String AES_PASSWORD = "oC86T4NeB5v6duLkmgcJ6Q==";
+    /**
+     * AES加密算法
+     */
+//    private static final String DEFAULT_KEY = SymmetricAlgorithm.AES.getValue();
+
+    /**
+     * 默认加密
+     *
+     * @param data 需要加密的数据
+     * @return  encrypt data
+     * @throws ServiceException 异常
+     */
+    public static String encryptDefault(String data) throws ServiceException {
+        return encrypt(data, AES_PASSWORD);
+    }
+
+    /**
+     * 默认解密
+     *
+     * @param data 需要解密的数据
+     * @return 解密后的数据
+     * @throws ServiceException 异常
+     */
+    public static String decryptDefault(String data) throws ServiceException {
+        return decrypt(data, AES_PASSWORD);
+    }
 
     /**
      * 驼峰转下划线
@@ -76,6 +107,60 @@ public class StringUtils {
         }
     }
 
+    /**
+     * 判断字符串是否符合手机号码格式
+     * 移动号段:   134 135 136 137 138 139 147 148 150 151 152 157 158 159  165 172 178 182 183 184 187 188 198
+     * 联通号段:   130 131 132 145 146 155 156 166 170 171 175 176 185 186
+     * 电信号段:   133 149 153 170 173 174 177 180 181 189  191  199
+     * 虚拟运营商: 170
+     * @param res 待检测的字符串
+     * @return 是否为手机号
+     */
+
+    public static boolean isMobile(String res) {
+        String telRegex = "^((13[0-9])|(14[5,6,7,9])|(15[^4])|(16[5,6])|(17[0-9])|(18[0-9])|(19[1,8,9]))\\d{8}$";
+        if (org.springframework.util.StringUtils.isEmpty(res))
+            return false;
+        else
+            return res.matches(telRegex);
+    }
+
+    /**
+     * 判断是否为openid
+     * 微信openid：a-z,A-Z,0-9组成的28位
+     * 微博uid：10位数字
+     * 腾讯QQopenid：32位HEX
+     * @param res   待检测的字符串
+     * @return 是否为openId
+     */
+    public static boolean isOpenID(String res) {
+        boolean isOK = false;
+        if (res != null && ((res.length() == 28  &&
+                res.matches("[a-zA-Z0-9]{28}")) // 微信openid
+                || (res.length() == 10 && Long.getLong(res) != null) //微博uid
+                || (res.length() == 32 && res.matches("[a-hA-H0-9]{32}")) //腾讯QQopenid
+        )) {
+            isOK = true;
+        }
+        return isOK;
+    }
+
+    /**
+     * 空判断
+     * @param res 源字符
+     * @return true or false
+     */
+    public boolean isEmpty(String res) {
+        return org.springframework.util.StringUtils.isEmpty(res);
+    }
+
+
+    /**
+     * 遍历文件目录
+     * @param file  目录名
+     * @param name  文件名
+     * @return      文件
+     */
     private static File findDict(File file, String name ) {
         try {
             log.info("file path {} ===== {}", file.getCanonicalPath(), name);
@@ -86,6 +171,9 @@ public class StringUtils {
         if (file.isDirectory()) {
             for (File item : file.listFiles()) {
                 if (item.isDirectory()) {
+                    if ("target".equals(item.getName())) {
+                        continue;
+                    }
                     if (name.equals(item.getName())) {
                         return item;
                     } else {
@@ -104,11 +192,22 @@ public class StringUtils {
         }
         return null;
     }
+
+    /**
+     * 深度优先遍历
+     * @param file 目录名
+     * @param name 文件名
+     * @return 文件
+     */
     // 深度优先遍历
     public static File findFile(File file, String name) {
         if (file.isDirectory()) {
             for (File item : file.listFiles()) {
+//                log.info("========find file {}", file.toString());
                 if (item.isDirectory()) {
+                    if ("target".equals(item.getName())) {
+                        continue;
+                    }
                     if (name.equals(item.getName())) {
                         return item;
                     } else {
@@ -137,7 +236,7 @@ public class StringUtils {
         return projectPath;
     }
 
-    public static String getPackagePath(String projectPath, String projectName) {
+    private static String getPackagePath(String projectPath, String projectName) {
 
         projectPath = projectPath + "/src/main/java";
 
@@ -153,7 +252,7 @@ public class StringUtils {
         return name;
     }
 
-    public static File getDirectory(File file, String pak) {
+    private static File getDirectory(File file, String pak) {
         if (file.isDirectory()) {
             if (pak.equals(file.getName())) {
                 return file;
@@ -179,4 +278,47 @@ public class StringUtils {
         name = name.replace("src/main/java/", "");
         return name.replace("/", ".");
     }
+
+
+    /**
+     * 加密
+     *
+     * @param data 要加密的数据
+     * @param key  秘钥
+     * @return string
+     * @throws ServiceException 异常
+     */
+    public static String encrypt(String data, String key) throws ServiceException {
+        try {
+            //实例化加密算法
+            AES aes = SecureUtil.aes(key.getBytes());
+            String encrypt = aes.encryptBase64(data);
+            return encrypt;
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("数据加密失败");
+        }
+
+    }
+
+
+    /**
+     * 解密
+     *
+     * @param encryptData 要解密的数据
+     * @param key         秘钥
+     * @return string
+     * @throws ServiceException 异常
+     */
+    public static String decrypt(String encryptData, String key) throws ServiceException {
+        try {
+            AES aes = SecureUtil.aes(key.getBytes());
+            String decrypt = aes.decryptStr(encryptData);
+            return decrypt;
+        } catch (Exception e) {
+            throw new ServiceException("数据解密失败");
+        }
+
+    }
+
 }

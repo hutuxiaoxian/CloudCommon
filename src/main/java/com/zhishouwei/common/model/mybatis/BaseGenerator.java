@@ -67,6 +67,9 @@ public class BaseGenerator  {
 
 
     private void init() {
+        if (projectPath == null) {
+            projectPath = System.getProperty("user.dir");
+        }
         log.info("{},{},{}" , mysqlUrl, mysqlUsername, mysqlPassword);
         // 获取到项目路径
         projectPath = StringUtils.getProjectPath(projectPath, projectName);

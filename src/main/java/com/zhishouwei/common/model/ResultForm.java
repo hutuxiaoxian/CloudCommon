@@ -1,5 +1,7 @@
 package com.zhishouwei.common.model;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.zhishouwei.common.exception.ServiceException;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
@@ -116,4 +118,12 @@ public class ResultForm implements Serializable {
         return this.status == ResultEnum.success.getResult();
     }
 
+
+    public String toJsonString() {
+        return JSON.toJSONString(this);
+    }
+
+    public JSONObject toJson() {
+        return JSON.parseObject(this.toJsonString());
+    }
 }

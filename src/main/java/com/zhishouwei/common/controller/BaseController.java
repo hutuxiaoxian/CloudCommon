@@ -9,10 +9,12 @@ import com.zhishouwei.common.model.mapper.BaseMapper;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
 
@@ -27,7 +29,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
     @ApiOperation("获取数据列表")
     @ResponseBody
     @RequestMapping(value = "list", method = {RequestMethod.GET,RequestMethod.POST})
-    public ResultForm list(@RequestBody JsonRequestBody json) {
+    public ResultForm list(@ApiIgnore OAuth2Authentication principal, @RequestBody JsonRequestBody json) {
         if (json != null) {
             Entity t = (Entity) json.tryGet(service.getEntityClass());
             PageForm pageForm = json.getPageForm();
@@ -42,7 +44,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
     }
     @ResponseBody
     @RequestMapping(value = "update", method = {RequestMethod.POST})
-    public ResultForm update(@RequestBody JsonRequestBody json) {
+    public ResultForm update(@ApiIgnore OAuth2Authentication principal, @RequestBody JsonRequestBody json) {
         if (json != null) {
             Entity t = (Entity) json.tryGet(service.getEntityClass());
             try {
@@ -56,7 +58,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
     }
     @ResponseBody
     @RequestMapping(value = "updateByList", method = {RequestMethod.POST})
-    public ResultForm updateByList(@RequestBody JsonRequestBody json) {
+    public ResultForm updateByList(@ApiIgnore OAuth2Authentication principal, @RequestBody JsonRequestBody json) {
         if (json != null) {
             LinkedList<Entity> t = (LinkedList<Entity>) json.tryGetList(service.getEntityClass());
             try {
@@ -70,7 +72,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
     }
     @ResponseBody
     @RequestMapping(value = "save", method = {RequestMethod.POST})
-    public ResultForm save(@RequestBody JsonRequestBody json) {
+    public ResultForm save(@ApiIgnore OAuth2Authentication principal, @RequestBody JsonRequestBody json) {
         if (json != null) {
             Entity t = (Entity) json.tryGet(service.getEntityClass());
             try {
@@ -86,7 +88,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
     }
     @ResponseBody
     @RequestMapping(value = "saveByList", method = {RequestMethod.POST})
-    public ResultForm saveByList(@RequestBody JsonRequestBody json) {
+    public ResultForm saveByList(@ApiIgnore OAuth2Authentication principal, @RequestBody JsonRequestBody json) {
         if (json != null) {
             List<Entity> list = json.tryGetList(service.getEntityClass());
             try {
