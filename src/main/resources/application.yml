@@ -10,3 +10,7 @@ mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
     log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+security:
+  oauth2:
+    resource:
+      service-id: hutu-oauth2-resource

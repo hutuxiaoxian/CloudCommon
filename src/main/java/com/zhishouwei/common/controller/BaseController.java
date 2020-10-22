@@ -9,6 +9,7 @@ import com.zhishouwei.common.model.mapper.BaseMapper;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
