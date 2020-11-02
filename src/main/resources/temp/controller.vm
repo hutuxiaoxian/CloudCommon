@@ -11,6 +11,6 @@ import com.zhishouwei.common.controller.BaseController;
  * @since: ${date}
  */
 @RestController
-@RequestMapping("${entity}")
+@RequestMapping("${table.name}")
 public class ${table.controllerName} extends BaseController<${entity}, ${table.serviceImplName}> {
 }

@@ -50,6 +50,36 @@ public class StringUtils {
     }
 
     /**
+     * 下划线转驼峰
+     * @param param 源字符串
+     * @return 转化结果
+     */
+    public static String underlineToCamel(String param) {
+        if (param == null || "".equals(param.trim())) {
+            return "";
+        }
+        int len = param.length();
+        StringBuilder sb = new StringBuilder(len);
+        Boolean flag = false; // "_" 后转大写标志,默认字符前面没有"_"
+        for (int i = 0; i < len; i++) {
+            char c = param.charAt(i);
+            if (c == '_') {
+                flag = true;
+                continue;   //标志设置为true,跳过
+            } else {
+                if (flag == true) {
+                    //表示当前字符前面是"_" ,当前字符转大写
+                    sb.append(Character.toUpperCase(param.charAt(i)));
+                    flag = false;  //重置标识
+                } else {
+                    sb.append(Character.toLowerCase(param.charAt(i)));
+                }
+            }
+        }
+        return sb.toString();
+    }
+
+    /**
      * 包名转化为文件路径名
      * @param packageName   包名
      * @return  文件路径
@@ -238,7 +268,9 @@ public class StringUtils {
 
     private static String getPackagePath(String projectPath, String projectName) {
 
-        projectPath = projectPath + "/src/main/java";
+        if (!projectPath.contains("/src/main/java")) {
+            projectPath = projectPath + "/src/main/java";
+        }
 
         File packageFile = new File(projectPath);
         File file = getDirectory(packageFile, projectName);
@@ -273,8 +305,9 @@ public class StringUtils {
     }
     public static String getPackageName(String projectPath, String projectName) {
 
-        log.info("{}----getPackageName------ {}", projectPath, projectName);
+        log.info("{} ----getPackageName------ {}", projectPath, projectName);
         String name = getPackagePath(projectPath, projectName);
+        name = name.substring(name.indexOf("src/main/java/"));
         name = name.replace("src/main/java/", "");
         return name.replace("/", ".");
     }

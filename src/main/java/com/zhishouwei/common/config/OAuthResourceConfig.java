@@ -3,14 +3,10 @@ package com.zhishouwei.common.config;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.oauth2.config.annotation.web.configuration.EnableResourceServer;
 import org.springframework.security.oauth2.config.annotation.web.configuration.ResourceServerConfigurerAdapter;
 import org.springframework.security.oauth2.config.annotation.web.configurers.ResourceServerSecurityConfigurer;
-import org.springframework.security.oauth2.provider.authentication.OAuth2AuthenticationManager;
 import org.springframework.security.oauth2.provider.expression.OAuth2WebSecurityExpressionHandler;
 import org.springframework.security.oauth2.provider.token.DefaultTokenServices;
 import org.springframework.security.oauth2.provider.token.store.redis.RedisTokenStore;
@@ -18,8 +14,7 @@ import org.springframework.security.oauth2.provider.token.store.redis.RedisToken
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 
-@Configuration
-@EnableResourceServer
+//@Configuration
 public class OAuthResourceConfig extends ResourceServerConfigurerAdapter {
     @Value("${security.oauth2.resource.service-id:hutu-oauth2-resource}")
     private String resourceId;

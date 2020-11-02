@@ -9,6 +9,7 @@ import com.zhishouwei.common.model.mapper.BaseMapper;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,7 +25,7 @@ import java.util.List;
 
 
 public class BaseController<Entity extends BaseEntity, Service extends BaseServiceImpl<BaseMapper<Entity>, Entity>> {
-    @Resource
+    @Autowired
     Service service;
 
     @ApiOperation("获取数据列表")

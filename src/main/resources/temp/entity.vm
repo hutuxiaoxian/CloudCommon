@@ -1,27 +1,34 @@
 package ${package.Entity};
-
+## 引用所有的包，部分由BaseEntity继承，不需要生成
 #foreach($pkg in ${table.importPackages})
 import ${pkg};
 #end
+## 单独引用，目的是部分由BaseEntity继承，不需要自动生成；
+##import com.baomidou.mybatisplus.annotation.TableName;
+##import com.baomidou.mybatisplus.annotation.TableField;
+
 #if(${swagger2})
 import io.swagger.annotations.ApiModel;
-import io.swagger.annotations.ApiModelProperty;
+##import io.swagger.annotations.ApiModelProperty;
 #end
 
-##import com.baomidou.mybatisplus.annotation.TableName;
-##import com.zhishouwei.common.model.entity.BaseEntity;
+import com.zhishouwei.common.model.entity.BaseEntity;
 import lombok.Data;
-import javax.persistence.Entity;
+##import lombok.EqualsAndHashCode;
+
+##import javax.persistence.Entity;
 ##import javax.persistence.Table;
 ##import java.io.Serializable;
+import java.util.Date;
 
 /**
  * @Author: auto generate by hutu
  * @Create: ${date}
  */
 
-@Entity
+##@Entity
 @Data
+##@EqualsAndHashCode(callSuper = true)
 #if(${table.convert})
 @TableName("${table.name}")
 #end

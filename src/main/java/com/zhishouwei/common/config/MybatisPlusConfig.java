@@ -1,6 +1,13 @@
 package com.zhishouwei.common.config;
 
+import com.baomidou.mybatisplus.core.incrementer.IKeyGenerator;
+import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
+import com.baomidou.mybatisplus.core.parser.ISqlParser;
+import com.baomidou.mybatisplus.extension.incrementer.H2KeyGenerator;
 import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.TableNameHandler;
+import com.baomidou.mybatisplus.extension.plugins.inner.DynamicTableNameInnerInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.inner.InnerInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.optimize.JsqlParserCountOptimize;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
@@ -25,6 +32,11 @@ public class MybatisPlusConfig {
 //    public MasterDataSqlInjector masterDataSqlInjector() {
 //        return new MasterDataSqlInjector();
 //    }
-
+//    分表逻辑处理
+//    private DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor() {
+//        DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor();
+//        TableNameHandler
+//        innerInterceptor.setTableNameHandlerMap();
+//    }
 
 }

@@ -228,7 +228,7 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
             List<String> ids = new ArrayList<>();
             for (T item : list) {
                 if (!ObjectUtils.isEmpty(item) && !ObjectUtils.isEmpty(item.getId())) {
-                    ids.add(item.getId());
+                    ids.add(item.getId() + "");
                 } else {
                     throw new ServiceException("未找到数据ID", ServiceException.ERROR_NO_ID);
                 }

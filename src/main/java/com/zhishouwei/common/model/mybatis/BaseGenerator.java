@@ -13,6 +13,7 @@ import com.zhishouwei.common.model.service.BaseService;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.factory.annotation.Configurable;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -22,6 +23,7 @@ import org.springframework.stereotype.Component;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.Map;
 
 @Slf4j
 //@Data
@@ -75,7 +77,7 @@ public class BaseGenerator  {
         projectPath = StringUtils.getProjectPath(projectPath, projectName);
         log.info("projectPath {}", projectPath);
         // 根据包路径获取到项目类文件路径
-//        projectPath = StringUtils.getPackagePath(projectPath, projectName);
+//        String packagePath = StringUtils.getPackagePath(projectPath, projectName);
         if (projectName == null) {
             projectName = projectPath.substring(projectPath.lastIndexOf("/") + 1);
         }
@@ -84,7 +86,11 @@ public class BaseGenerator  {
         globalConfig.setAuthor("hutu");//作者名
 //        String projectPath = System.getProperty("user.dir");
         //生成文件的输出目录
-        globalConfig.setOutputDir(projectPath + "/src/main/java");
+        String outputDir = projectPath;
+        if (ObjectUtils.isNotEmpty(projectPath) && projectPath.contains("/src/main/java")) {
+            outputDir = projectPath.substring(0, projectPath.indexOf("/src/main/java"));
+        }
+        globalConfig.setOutputDir(outputDir + "/src/main/java");
 
         //生成后是否打开文件夹
         globalConfig.setOpen(false);
@@ -120,7 +126,7 @@ public class BaseGenerator  {
         //包配置
         PackageConfig packageConfig = new PackageConfig();
         String name = StringUtils.getPackageName(projectPath, projectName);
-        log.info("{}---------- {}", projectPath, name);
+        log.info("projectPath:{} ---------- PackageName:{}", projectPath, name);
         packageConfig.setModuleName("");
         //packageConfig.setModuleName("anti_generator");
         packageConfig.setParent("");
@@ -133,8 +139,8 @@ public class BaseGenerator  {
 
         //策略配置
         StrategyConfig strategyConfig = new StrategyConfig();
-        strategyConfig.setNaming(NamingStrategy.underline_to_camel); //表名生成策略
-        strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel); //列名生成策略
+        strategyConfig.setNaming(NamingStrategy.underline_to_camel); //表名生成策略,下划线到驼峰
+        strategyConfig.setColumnNaming(NamingStrategy.underline_to_camel); //列名生成策略,下划线到驼峰
         strategyConfig.setControllerMappingHyphenStyle(true);
         strategyConfig.setEntityTableFieldAnnotationEnable(true);
         strategyConfig.setChainModel(true);
@@ -145,17 +151,20 @@ public class BaseGenerator  {
         strategyConfig.setEntityTableFieldAnnotationEnable(true);
         //需要生成的表
         strategyConfig.setInclude();
-        strategyConfig.setSuperEntityClass(BaseEntity.class);
+//        strategyConfig.setSuperEntityClass(BaseEntity.class);
+//        strategyConfig.setSuperEntityColumns("id","createTime","updateTime");
         strategyConfig.setSuperControllerClass(BaseController.class);
         strategyConfig.setSuperServiceClass(BaseService.class);
         strategyConfig.setSuperServiceImplClass(BaseServiceImpl.class);
-        strategyConfig.setSuperEntityColumns("id","createTime","updateTime");
         gen.setStrategy(strategyConfig);
 
         //自定义属性注入，这个必须有
         InjectionConfig cfg=new InjectionConfig() {
             @Override
             public void initMap() {
+                Map<String, Object> map = new HashMap<>();
+                map.put("name", this.getConfig().getTemplate().getController().replace("Controller",""));
+                this.setMap(map);
             }
         };
         gen.setCfg(cfg);
