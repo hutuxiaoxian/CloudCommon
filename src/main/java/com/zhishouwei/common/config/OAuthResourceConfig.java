@@ -21,10 +21,10 @@ import javax.servlet.http.HttpServletResponse;
 @Configuration
 @EnableResourceServer
 public class OAuthResourceConfig extends ResourceServerConfigurerAdapter {
-    @Value("${security.oauth2.resource.service-id}")
+    @Value("${security.oauth2.resource.service-id:hutu-oauth2-resource}")
     private String resourceId;
 
-    @Value("${security.oauth2.ignore}")
+    @Value("${security.oauth2.ignore:}")
     private String[] ignore;
 
     @Resource
