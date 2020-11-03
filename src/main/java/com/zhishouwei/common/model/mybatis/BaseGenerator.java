@@ -151,8 +151,8 @@ public class BaseGenerator  {
         strategyConfig.setEntityTableFieldAnnotationEnable(true);
         //需要生成的表
         strategyConfig.setInclude();
-//        strategyConfig.setSuperEntityClass(BaseEntity.class);
-//        strategyConfig.setSuperEntityColumns("id","createTime","updateTime");
+        strategyConfig.setSuperEntityClass(BaseEntity.class);
+        strategyConfig.setSuperEntityColumns("id","createTime","updateTime");
         strategyConfig.setSuperControllerClass(BaseController.class);
         strategyConfig.setSuperServiceClass(BaseService.class);
         strategyConfig.setSuperServiceImplClass(BaseServiceImpl.class);

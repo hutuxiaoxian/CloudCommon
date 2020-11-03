@@ -1,6 +1,7 @@
 package com.zhishouwei.common.model;
 
 import com.alibaba.fastjson.JSON;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
@@ -32,6 +33,10 @@ public class AuthUser extends User {
 
     public static AuthUser getInstances(OAuth2Authentication principal) {
         return (AuthUser) JSON.parseObject(JSON.toJSONString(principal.getUserAuthentication().getDetails()), AuthUser.class);
+    }
+    public static AuthUser getInstance() {
+        OAuth2Authentication principal = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        return getInstances(principal);
     }
 
     public boolean isAccountNonExpired() {

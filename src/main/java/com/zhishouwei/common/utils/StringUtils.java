@@ -2,21 +2,16 @@ package com.zhishouwei.common.utils;
 
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
-//import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import com.zhishouwei.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Objects;
+
 @Slf4j
 public class StringUtils {
-
-    private static final String AES_PASSWORD = "oC86T4NeB5v6duLkmgcJ6Q==";
-    /**
-     * AES加密算法
-     */
-//    private static final String DEFAULT_KEY = SymmetricAlgorithm.AES.getValue();
 
     /**
      * 默认加密
@@ -26,7 +21,7 @@ public class StringUtils {
      * @throws ServiceException 异常
      */
     public static String encryptDefault(String data) throws ServiceException {
-        return encrypt(data, AES_PASSWORD);
+        return encrypt(data, Constants.ASC_PASSWORD);
     }
 
     /**
@@ -37,8 +32,48 @@ public class StringUtils {
      * @throws ServiceException 异常
      */
     public static String decryptDefault(String data) throws ServiceException {
-        return decrypt(data, AES_PASSWORD);
+        return decrypt(data, Constants.ASC_PASSWORD);
     }
+
+    /**
+     * 加密
+     *
+     * @param data 要加密的数据
+     * @param key  秘钥
+     * @return string
+     * @throws ServiceException 异常
+     */
+    public static String encrypt(String data, String key) throws ServiceException {
+        try {
+            //实例化加密算法
+            AES aes = SecureUtil.aes(key.getBytes());
+            return aes.encryptBase64(data);
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new ServiceException("数据加密失败");
+        }
+
+    }
+
+
+    /**
+     * 解密
+     *
+     * @param encryptData 要解密的数据
+     * @param key         秘钥
+     * @return string
+     * @throws ServiceException 异常
+     */
+    public static String decrypt(String encryptData, String key) throws ServiceException {
+        try {
+            AES aes = SecureUtil.aes(key.getBytes());
+            return aes.decryptStr(encryptData);
+        } catch (Exception e) {
+            throw new ServiceException("数据解密失败");
+        }
+
+    }
+
 
     /**
      * 驼峰转下划线
@@ -60,14 +95,13 @@ public class StringUtils {
         }
         int len = param.length();
         StringBuilder sb = new StringBuilder(len);
-        Boolean flag = false; // "_" 后转大写标志,默认字符前面没有"_"
+        boolean flag = false; // "_" 后转大写标志,默认字符前面没有"_"
         for (int i = 0; i < len; i++) {
             char c = param.charAt(i);
             if (c == '_') {
                 flag = true;
-                continue;   //标志设置为true,跳过
             } else {
-                if (flag == true) {
+                if (flag) {
                     //表示当前字符前面是"_" ,当前字符转大写
                     sb.append(Character.toUpperCase(param.charAt(i)));
                     flag = false;  //重置标识
@@ -148,11 +182,11 @@ public class StringUtils {
      */
 
     public static boolean isMobile(String res) {
-        String telRegex = "^((13[0-9])|(14[5,6,7,9])|(15[^4])|(16[5,6])|(17[0-9])|(18[0-9])|(19[1,8,9]))\\d{8}$";
-        if (org.springframework.util.StringUtils.isEmpty(res))
+        final String regular = "^((13[0-9])|(14[5,6,7,9])|(15[^4])|(16[5,6])|(17[0-9])|(18[0-9])|(19[1,8,9]))\\d{8}$";
+        if (org.springframework.util.StringUtils.isEmpty(res)) {
             return false;
-        else
-            return res.matches(telRegex);
+        }
+        return res.matches(regular);
     }
 
     /**
@@ -232,7 +266,7 @@ public class StringUtils {
     // 深度优先遍历
     public static File findFile(File file, String name) {
         if (file.isDirectory()) {
-            for (File item : file.listFiles()) {
+            for (File item : Objects.requireNonNull(file.listFiles())) {
 //                log.info("========find file {}", file.toString());
                 if (item.isDirectory()) {
                     if ("target".equals(item.getName())) {
@@ -276,7 +310,7 @@ public class StringUtils {
         File file = getDirectory(packageFile, projectName);
         String name = null;
         try {
-            name = file.getCanonicalPath().replace(projectPath+"/", "");
+            name = Objects.requireNonNull(file).getCanonicalPath().replace(projectPath+"/", "");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -289,7 +323,7 @@ public class StringUtils {
             if (pak.equals(file.getName())) {
                 return file;
             } else {
-                for (File item : file.listFiles()) {
+                for (File item : Objects.requireNonNull(file.listFiles())) {
                     if (pak.equals(item.getName())) {
                         return item;
                     } else
@@ -310,48 +344,6 @@ public class StringUtils {
         name = name.substring(name.indexOf("src/main/java/"));
         name = name.replace("src/main/java/", "");
         return name.replace("/", ".");
-    }
-
-
-    /**
-     * 加密
-     *
-     * @param data 要加密的数据
-     * @param key  秘钥
-     * @return string
-     * @throws ServiceException 异常
-     */
-    public static String encrypt(String data, String key) throws ServiceException {
-        try {
-            //实例化加密算法
-            AES aes = SecureUtil.aes(key.getBytes());
-            String encrypt = aes.encryptBase64(data);
-            return encrypt;
-        } catch (Exception e) {
-            e.printStackTrace();
-            throw new ServiceException("数据加密失败");
-        }
-
-    }
-
-
-    /**
-     * 解密
-     *
-     * @param encryptData 要解密的数据
-     * @param key         秘钥
-     * @return string
-     * @throws ServiceException 异常
-     */
-    public static String decrypt(String encryptData, String key) throws ServiceException {
-        try {
-            AES aes = SecureUtil.aes(key.getBytes());
-            String decrypt = aes.decryptStr(encryptData);
-            return decrypt;
-        } catch (Exception e) {
-            throw new ServiceException("数据解密失败");
-        }
-
     }
 
 }
