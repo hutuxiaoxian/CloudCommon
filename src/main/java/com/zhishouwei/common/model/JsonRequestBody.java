@@ -5,8 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 import com.zhishouwei.common.exception.ServiceException;
 import io.swagger.annotations.ApiModel;
 import io.swagger.annotations.ApiModelProperty;
-import io.swagger.annotations.ApiParam;
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.List;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class JsonRequestBody extends JSONObject {
     }
 
     public <T> T tryGet(String name, Class<T> clazz) {
-        return StringUtils.isEmpty(name) && this.containsKey(name) ? JSON.toJavaObject(this.getJSONObject(name), clazz) : JSON.toJavaObject(this, clazz);
+        return StringUtils.isNotEmpty(name) && this.containsKey(name) ? JSON.toJavaObject(this.getJSONObject(name), clazz) : JSON.toJavaObject(this, clazz);
     }
 
     public Map<String, Object> tryToMap() {

@@ -27,10 +27,9 @@ import java.util.Map;
 
 @Slf4j
 //@Data
-@Component
 @Configurable
-@EnableAutoConfiguration
-public class BaseGenerator  {
+//@EnableAutoConfiguration
+public class BaseGenerator {
 
     private static final String INSTANCE_KEY = "BASE_GENERATOR";
     @Value("${spring.datasource.url}")

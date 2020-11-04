@@ -1,5 +1,6 @@
 package com.zhishouwei.common.utils;
 
+import com.zhishouwei.common.config.MybatisPlusConfig;
 import com.zhishouwei.common.config.OAuthResourceConfig;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.cloud.openfeign.EnableFeignClients;
@@ -11,12 +12,11 @@ import java.lang.annotation.*;
 @Documented
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
-@Import({OAuthResourceConfig.class})
+@Import({OAuthResourceConfig.class, MybatisPlusConfig.class})
 @EnableResourceServer
 @EnableFeignClients
 @SpringBootApplication
 @EnableGlobalMethodSecurity(prePostEnabled = true)
+
 public @interface EnableCloudServer {
 }
-
-

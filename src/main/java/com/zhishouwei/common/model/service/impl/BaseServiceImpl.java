@@ -4,52 +4,37 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.metadata.OrderItem;
 import com.baomidou.mybatisplus.core.metadata.TableInfoHelper;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.baomidou.mybatisplus.extension.toolkit.SqlHelper;
-import com.google.common.collect.Maps;
 import com.zhishouwei.common.exception.ServiceException;
 import com.zhishouwei.common.model.DataPaging;
 import com.zhishouwei.common.model.PageForm;
 import com.zhishouwei.common.model.entity.BaseEntity;
 import com.zhishouwei.common.model.mapper.BaseMapper;
+import com.zhishouwei.common.model.mybatis.DynamicTableNameUtils;
 import com.zhishouwei.common.model.service.BaseService;
 import com.zhishouwei.common.utils.MapUtils;
 import com.zhishouwei.common.utils.StringUtils;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ObjectUtils;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
 
 import java.util.*;
 
 
 @Slf4j
 public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  extends ServiceImpl<M, T> implements BaseService<M,T>, IService<T> {
+
+    @Autowired
+    private MybatisPlusInterceptor interceptor;
+
     public Class<T> getEntityClass() {
         return currentModelClass();
     }
-    //    private QueryWrapper<T> buildMapperQueryWrapper(Map<String, Object> params) {
-//        JSONObject json = new JSONObject(params);
-//        T entity = json.toJavaObject(this.currentModelClass());
-//        QueryWrapper<T> queryWrapper = new QueryWrapper<>(entity);
-//
-//        for (String key : params.keySet()) {
-//            Object val = params.get(key);
-//            if (val instanceof Collection) {
-//                queryWrapper.in(key, val);
-//            } else if (val.getClass().isArray()) {
-//                queryWrapper.in(key, val);
-//            } else {
-//                queryWrapper.eq(key, val);
-//            }
-//        }
-//
-//        log.info("entity:{},params:{}", JSON.toJSONString(entity), JSON.toJSONString(params));
-//        return queryWrapper;
-//    }
 
     @Autowired(required = false)
     protected SqlSessionTemplate sqlSessionTemplate;
@@ -92,7 +77,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public T saveEntity(T entity) throws ServiceException {
         boolean isSave = false;
-        if (!ObjectUtils.isEmpty(entity) && ObjectUtils.isEmpty(entity.getId())) {
+        if (ObjectUtils.isNotEmpty(entity) && ObjectUtils.isEmpty(entity.getId())) {
+            DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
             isSave = save(entity);
         }
         return isSave ? entity : null;
@@ -102,8 +88,9 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public LinkedList<T> saveByList(LinkedList<T> list) throws ServiceException {
         LinkedList<T> result = new LinkedList<>();
-        if (!ObjectUtils.isEmpty(list) && list.size() > 0) {
+        if (ObjectUtils.isNotEmpty(list) && list.size() > 0) {
             for (T item : list) {
+                DynamicTableNameUtils.changeTableName(interceptor, item.tableName(), item.getSplitTableId());
                 boolean isSave = save(item);
                 if (isSave) {
                     result.add(item);
@@ -116,8 +103,9 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public T update(T entity) throws ServiceException {
         boolean isUpdate = false;
-        if (!ObjectUtils.isEmpty(entity)) {
-            if (ObjectUtils.isEmpty(entity.getId()) && entity.getId().length() > 0) {
+        if (ObjectUtils.isNotEmpty(entity)) {
+            if (ObjectUtils.isNotEmpty(entity.getId()) && entity.getId().length() > 0) {
+                DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
                 isUpdate = update(entity, buildEntityQueryWrapper(entity));
             }
         } else {
@@ -129,7 +117,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public LinkedList<T> updateByList(LinkedList<T> list) throws ServiceException {
         LinkedList<T> result = new LinkedList<>();
-        if (!ObjectUtils.isEmpty(list) && list.size() > 0) {
+        if (ObjectUtils.isNotEmpty(list) && list.size() > 0) {
+            DynamicTableNameUtils.changeTableName(interceptor, result.getFirst().tableName(), result.getFirst().getSplitTableId());
             boolean isUpdate = updateBatchById(list);
             if (!isUpdate) {
                 throw new ServiceException("批量更新数据失败！" + list.toString());
@@ -141,7 +130,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public T saveOrUpdateEntity(T entity) throws ServiceException {
         boolean isOK = false;
-        if (!ObjectUtils.isEmpty(entity)) {
+        if (ObjectUtils.isNotEmpty(entity)) {
+            DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
             isOK = saveOrUpdate(entity);
         }
         return isOK ? entity : null;
@@ -150,7 +140,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public LinkedList<T> saveOrUpdate(LinkedList<T> list) throws ServiceException {
         LinkedList<T> result = new LinkedList<>();
-        if (!ObjectUtils.isEmpty(list) && list.size() > 0) {
+        if (ObjectUtils.isNotEmpty(list) && list.size() > 0) {
+            DynamicTableNameUtils.changeTableName(interceptor, list.getFirst().tableName(), list.getFirst().getSplitTableId());
             for (T item : list) {
                 boolean isOK = saveOrUpdate(item);
                 if (!isOK) {
@@ -164,7 +155,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public T getData(T entity) throws ServiceException {
         T result = null;
-        if (!ObjectUtils.isEmpty(entity)) {
+        if (ObjectUtils.isNotEmpty(entity)) {
+            DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
             if (!ObjectUtils.isEmpty(entity.getId())) {
                 result = getById(entity.getId());
             } else {
@@ -177,7 +169,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public List<T> getList(T entity) throws ServiceException {
         List<T> result = null;
-        if (!ObjectUtils.isEmpty(entity)) {
+        if (ObjectUtils.isNotEmpty(entity)) {
+            DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
             if (!ObjectUtils.isEmpty(entity.getId())) {
                 result = new LinkedList<>();
                 result.add(getById(entity.getId()));
@@ -194,7 +187,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public DataPaging<T> getList(T entity, PageForm pager) throws ServiceException {
         DataPaging<T> result;
-        if (!ObjectUtils.isEmpty(entity) && !ObjectUtils.isEmpty(entity.getId())) {
+        DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
+        if (ObjectUtils.isNotEmpty(entity) && ObjectUtils.isNotEmpty(entity.getId())) {
             result = new DataPaging<>();
             List<T> list = new LinkedList<>();
             list.add(getById(entity.getId()));
@@ -213,7 +207,8 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public boolean delete(T entity) throws ServiceException {
         boolean isDel;
-        if (!ObjectUtils.isEmpty(entity) && !ObjectUtils.isEmpty(entity.getId())) {
+        if (ObjectUtils.isNotEmpty(entity) && ObjectUtils.isNotEmpty(entity.getId())) {
+            DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
             isDel = removeById(entity.getId());
         } else {
             throw new ServiceException("未找到数据ID", ServiceException.ERROR_NO_ID);
@@ -224,15 +219,16 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     @Override
     public boolean deleteByList(LinkedList<T> list) throws ServiceException {
         boolean isDel = false;
-        if (!ObjectUtils.isEmpty(list) && list.size() > 0) {
+        if (ObjectUtils.isNotEmpty(list) && list.size() > 0) {
             List<String> ids = new ArrayList<>();
             for (T item : list) {
-                if (!ObjectUtils.isEmpty(item) && !ObjectUtils.isEmpty(item.getId())) {
+                if (ObjectUtils.isNotEmpty(item) && ObjectUtils.isNotEmpty(item.getId())) {
                     ids.add(item.getId() + "");
                 } else {
                     throw new ServiceException("未找到数据ID", ServiceException.ERROR_NO_ID);
                 }
             }
+            DynamicTableNameUtils.changeTableName(interceptor, list.getFirst().tableName(), list.getFirst().getSplitTableId());
             isDel = removeByIds(ids);
         }
         return isDel;
