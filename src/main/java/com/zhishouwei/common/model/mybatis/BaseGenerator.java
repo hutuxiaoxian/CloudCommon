@@ -27,8 +27,6 @@ import java.util.Map;
 
 @Slf4j
 //@Data
-@Component
-@Configurable
 @EnableAutoConfiguration
 public class BaseGenerator  {
 

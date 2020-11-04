@@ -24,6 +24,10 @@ public class ServiceException extends RuntimeException {
         super(message);
         errId = errCode;
     }
+    public ServiceException(Integer errCode, String message) {
+        super(message);
+        errId = errCode;
+    }
 
     public ServiceException(Throwable cause) {
         super(cause);

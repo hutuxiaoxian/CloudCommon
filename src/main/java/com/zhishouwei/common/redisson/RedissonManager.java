@@ -20,7 +20,7 @@ import org.springframework.stereotype.Component;
  * @date: 2020/7/7 13:13
  */
 @Slf4j
-@Component
+//@Component
 public class RedissonManager {
     private Config config = new Config();
 

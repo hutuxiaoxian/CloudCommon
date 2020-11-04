@@ -29,6 +29,10 @@ import java.util.Map;
 @Configuration
 public class RedisConfiguration {
 
+    @Bean
+    public RedisUtil redisUtil() {
+        return new RedisUtil();
+    }
     /**
      * redis key 生成策略
      *

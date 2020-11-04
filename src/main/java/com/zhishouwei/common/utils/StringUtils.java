@@ -2,6 +2,7 @@ package com.zhishouwei.common.utils;
 
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.symmetric.AES;
+import com.zhishouwei.common.config.RegularConstants;
 import com.zhishouwei.common.exception.ServiceException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -9,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Objects;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 public class StringUtils {
@@ -187,6 +190,39 @@ public class StringUtils {
             return false;
         }
         return res.matches(regular);
+    }
+
+    /**
+     * 校验邮箱合法性
+     *
+     * @param email 邮箱
+     * @return boolean
+     */
+    public static boolean checkEmail(String email) {
+        return check(email, RegularConstants.EMAIL_RULE);
+    }
+
+    /**
+     * 校验密码
+     *
+     * @param passWord 密码
+     * @return boolean
+     */
+    public static boolean checkPassWord(String passWord) {
+        return check(passWord, RegularConstants.PASS_WORD_RULE);
+    }
+
+    /**
+     * 校验规则
+     *
+     * @param checkValue 检查值
+     * @param rule       正则
+     * @return boolean
+     */
+    public static boolean check(String checkValue, String rule) {
+        Pattern p = Pattern.compile(rule);
+        Matcher m = p.matcher(checkValue);
+        return m.matches();
     }
 
     /**

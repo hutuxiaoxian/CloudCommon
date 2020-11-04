@@ -1,11 +1,13 @@
 spring:
-  application:
-    name: common
-  datasource:
-    url: jdbc:mysql://localhost:3306/demo
-    type: com.alibaba.druid.pool.DruidDataSource
-    password: VcaHmg0!qBeayg$ku6f~_Q1vtalQ4egu
-    username: root
+#  application:
+#    name: common
+#  datasource:
+#    url: jdbc:mysql://localhost:3306/demo
+#    type: com.alibaba.druid.pool.DruidDataSource
+#    password: VcaHmg0!qBeayg$ku6f~_Q1vtalQ4egu
+#    username: root
+  main:
+    allow-bean-definition-overriding: true
 mybatis-plus:
   configuration:
     map-underscore-to-camel-case: true
@@ -14,3 +16,4 @@ security:
   oauth2:
     resource:
       service-id: hutu-oauth2-resource
+

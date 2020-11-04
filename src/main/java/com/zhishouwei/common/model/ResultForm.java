@@ -52,6 +52,8 @@ public class ResultForm implements Serializable {
         this.messages = messages;
     }
 
+    public static ResultForm success() { return success(null); }
+
     public static ResultForm success(Object result) {
         return success(result, "数据请求成功");
     }
@@ -77,6 +79,10 @@ public class ResultForm implements Serializable {
                 error((Object)null, 500, "", (ServiceException)e)
                 :
                 error((Object)null, 500, "", (Exception)e);
+    }
+
+    public static ResultForm error() {
+        return error("处理失败");
     }
 
     public static ResultForm error(String msg) {

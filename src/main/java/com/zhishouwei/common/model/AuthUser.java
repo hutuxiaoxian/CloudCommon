@@ -1,14 +1,17 @@
 package com.zhishouwei.common.model;
 
 import com.alibaba.fastjson.JSON;
+import lombok.Data;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.oauth2.provider.OAuth2Authentication;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-//@SuppressWarnings("ALL")
-//@Data
+@SuppressWarnings("ALL")
+@Data
 public class AuthUser extends User {
 
     private static final Long serialVersionUID = 801L;
@@ -18,6 +21,9 @@ public class AuthUser extends User {
     private String[] roles;
     private String[] resources;
     private String identifyCode;
+    private String mobile;
+    private String openId;
+    private String email;
 
     private boolean accountNonExpired;
 
@@ -37,6 +43,13 @@ public class AuthUser extends User {
     public static AuthUser getInstance() {
         OAuth2Authentication principal = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
         return getInstances(principal);
+    }
+    public static String getToken() {
+        OAuth2Authentication principal = (OAuth2Authentication) SecurityContextHolder.getContext().getAuthentication();
+        Authentication userAuthentication = principal.getUserAuthentication();
+        Map<String, Object> details = (Map<String, Object>) userAuthentication.getDetails();
+        Map<String, Object> token = (Map<String, Object>) details.get("details");
+        return token.get("tokenValue").toString();
     }
 
     public boolean isAccountNonExpired() {
