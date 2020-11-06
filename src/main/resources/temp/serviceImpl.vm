@@ -10,6 +10,6 @@ import org.springframework.stereotype.Service;
  * @Create: ${date}
  */
 @Service
-public class ${table.serviceImplName} extends BaseServiceImpl<BaseMapper<${entity}>, ${entity}> {
+public class ${table.serviceImplName} extends BaseServiceImpl<${mapper}, ${entity}> {
 
 }

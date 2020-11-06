@@ -5,7 +5,6 @@ import com.zhishouwei.common.model.JsonRequestBody;
 import com.zhishouwei.common.model.PageForm;
 import com.zhishouwei.common.model.ResultForm;
 import com.zhishouwei.common.model.entity.BaseEntity;
-import com.zhishouwei.common.model.mapper.BaseMapper;
 import com.zhishouwei.common.model.service.impl.BaseServiceImpl;
 import com.zhishouwei.common.exception.ServiceException;
 import io.swagger.annotations.ApiOperation;
@@ -22,9 +21,9 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class BaseController<Entity extends BaseEntity, Service extends BaseServiceImpl<BaseMapper<Entity>, Entity>> {
+public class BaseController<Entity extends BaseEntity, Service extends BaseServiceImpl> {
     @Autowired
-    Service service;
+    protected Service service;
 
     @ApiOperation("获取数据列表")
     @ResponseBody
@@ -48,7 +47,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
         if (json != null) {
             Entity t = (Entity) json.tryGet(service.getEntityClass());
             try {
-                Entity result = service.update(t);
+                Entity result = (Entity) service.update(t);
                 return ResultForm.success(result);
             } catch (ServiceException e) {
                 return ResultForm.error(e);
@@ -76,7 +75,7 @@ public class BaseController<Entity extends BaseEntity, Service extends BaseServi
         if (json != null) {
             Entity t = (Entity) json.tryGet(service.getEntityClass());
             try {
-                Entity result = service.saveEntity(t);
+                Entity result = (Entity) service.saveEntity(t);
                 if (result != null){
                     return ResultForm.success(result);
                 }

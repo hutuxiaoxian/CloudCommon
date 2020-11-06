@@ -5,18 +5,19 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import org.apache.commons.lang3.ObjectUtils;
 
 import java.io.Serializable;
-import java.lang.reflect.Method;
-import java.util.Date;
 
 @Data
 public class BaseEntity implements Serializable {
 
     @TableField(exist = false)
     private String splitTableId;
-    @TableId(type = IdType.ASSIGN_UUID)
-    private String id;
+    @TableId(type = IdType.AUTO)
+    private Integer id;
+//    @TableId(type = IdType.ASSIGN_UUID)
+//    private String id;
 //    @TableField("create_time")
 //    private Date createTime;
 //    @TableField("update_time")
@@ -24,7 +25,11 @@ public class BaseEntity implements Serializable {
 
 
     public String tableName() {
+        String name = null;
         TableName tableName = getClass().getAnnotation(TableName.class);
-        return tableName.value();
+        if (ObjectUtils.isNotEmpty(tableName)) {
+            name = tableName.value();
+        }
+        return name;
     }
 }

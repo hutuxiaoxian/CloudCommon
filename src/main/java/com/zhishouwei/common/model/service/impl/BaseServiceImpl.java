@@ -104,7 +104,7 @@ public class BaseServiceImpl<M extends BaseMapper<T>,T extends BaseEntity>  exte
     public T update(T entity) throws ServiceException {
         boolean isUpdate = false;
         if (ObjectUtils.isNotEmpty(entity)) {
-            if (ObjectUtils.isNotEmpty(entity.getId()) && entity.getId().length() > 0) {
+            if (ObjectUtils.isNotEmpty(entity.getId())) {
                 DynamicTableNameUtils.changeTableName(interceptor, entity.tableName(), entity.getSplitTableId());
                 isUpdate = update(entity, buildEntityQueryWrapper(entity));
             }
