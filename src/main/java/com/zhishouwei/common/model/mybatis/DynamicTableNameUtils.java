@@ -20,14 +20,19 @@ public class DynamicTableNameUtils {
     public static void changeTableName(MybatisPlusInterceptor interceptor, String oldName, String getSplitTableId) {
         for (InnerInterceptor item : interceptor.getInterceptors()) {
             if (item instanceof DynamicTableNameInnerInterceptor) {
-                Map<String, TableNameHandler> map = new HashMap<String, TableNameHandler>(){
-                    {
-                        put(oldName, (sql, tableName)-> {
-                            return getSplitTableId + "_" + tableName;
-                        });
+                TableNameHandler handler = new TableNameHandler() {
+                    @Override
+                    public String dynamicTableName(String sql, String tableName) {
+                        return getSplitTableId + "_" + tableName;
                     }
                 };
-                ((DynamicTableNameInnerInterceptor)item).setTableNameHandlerMap(map);
+                if (((DynamicTableNameInnerInterceptor) item).getTableNameHandlerMap() == null) {
+                    Map<String, TableNameHandler> map = new HashMap<String, TableNameHandler>();
+                    map.put(oldName, handler);
+                    ((DynamicTableNameInnerInterceptor)item).setTableNameHandlerMap(map);
+                } else {
+                    ((DynamicTableNameInnerInterceptor) item).getTableNameHandlerMap().put(oldName, handler);
+                }
             }
         }
     }

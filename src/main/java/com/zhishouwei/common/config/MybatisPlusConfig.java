@@ -63,7 +63,7 @@ public class MybatisPlusConfig {
     private DynamicTableNameInnerInterceptor dynamicTableNameInnerInterceptor() {
 
         DynamicTableNameInnerInterceptor innerInterceptor = new DynamicTableNameInnerInterceptor();
-
+        innerInterceptor.setTableNameHandlerMap(new HashMap<>());
 
         return innerInterceptor;
     }
